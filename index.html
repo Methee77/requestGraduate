@@ -3,208 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบตรวจสอบหลักสูตรตามหมวดหมู่</title>
+    <title>ระบบตรวจสอบหลักสูตร - Register & Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="bg-slate-100 min-h-screen p-4">
+<body class="bg-slate-100 min-h-screen">
 
-    <div id="login-box" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-2xl shadow-xl border-t-4 border-blue-600">
-        <h1 class="text-2xl font-bold text-center mb-2">ตรวจสอบหลักสูตร</h1>
-        <p class="text-center text-slate-500 mb-6 italic text-sm">ระบุรหัสนักศึกษาเพื่อเริ่มต้น</p>
-        <input type="text" id="student-id" placeholder="รหัสนักศึกษา (เช่น 6601)" class="w-full p-3 border rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="login()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">เข้าสู่ระบบ</button>
+    <div id="auth-section" class="flex items-center justify-center min-h-screen p-4">
+        <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl border-t-4 border-blue-600">
+            <h1 id="auth-title" class="text-2xl font-bold text-center mb-6 text-slate-800">เข้าสู่ระบบ</h1>
+            
+            <div class="space-y-4">
+                <input type="text" id="username" placeholder="ชื่อผู้ใช้งาน / รหัสนักศึกษา" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="password" placeholder="รหัสผ่าน" class="w-full p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                
+                <button id="auth-btn" onclick="handleAuth()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition">เข้าสู่ระบบ</button>
+                
+                <p id="auth-toggle" class="text-center text-sm text-blue-600 cursor-pointer hover:underline" onclick="toggleAuth()">
+                    ยังไม่มีบัญชี? สมัครสมาชิกที่นี่
+                </p>
+            </div>
+        </div>
     </div>
 
-    <div id="main-content" class="hidden max-w-5xl mx-auto space-y-6">
+    <div id="main-content" class="hidden max-w-5xl mx-auto p-4 space-y-6">
         <div class="bg-white p-6 rounded-2xl shadow-sm flex justify-between items-center border-l-8 border-blue-600">
             <div>
-                <h2 class="text-xl font-bold" id="user-display">รหัสนักศึกษา: </h2>
-                <p class="text-sm text-slate-500">ระบบบันทึกข้อมูลอัตโนมัติลงในเบราว์เซอร์นี้</p>
+                <h2 class="text-xl font-bold text-slate-800">สวัสดีคุณ: <span id="display-user" class="text-blue-600"></span></h2>
+                <p class="text-sm text-slate-500">ข้อมูลของคุณถูกบันทึกเรียบร้อยแล้ว</p>
             </div>
-            <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-100">ออกจากระบบ</button>
+            <button onclick="logout()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold hover:bg-red-100">ออกจากระบบ</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 class="font-bold text-slate-700 mb-2">1. หมวดวิชาศึกษาทั่วไป (เป้าหมาย 30)</h3>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-700 mb-2">ศึกษาทั่วไป (เป้าหมาย 30 นก.)</h3>
                 <div class="flex items-center gap-4">
-                    <div class="flex-1 bg-slate-200 h-4 rounded-full overflow-hidden">
-                        <div id="prog-gen" class="bg-blue-500 h-full" style="width: 0%"></div>
+                    <div class="flex-1 bg-slate-100 h-4 rounded-full overflow-hidden">
+                        <div id="prog-gen" class="bg-blue-500 h-full transition-all" style="width: 0%"></div>
                     </div>
                     <span id="txt-gen" class="font-bold text-blue-600">0/30</span>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 class="font-bold text-slate-700 mb-2">2. หมวดวิชาเฉพาะ (เป้าหมาย 100)</h3>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <h3 class="font-bold text-slate-700 mb-2">วิชาเฉพาะ (เป้าหมาย 100 นก.)</h3>
                 <div class="flex items-center gap-4">
-                    <div class="flex-1 bg-slate-200 h-4 rounded-full overflow-hidden">
-                        <div id="prog-major" class="bg-indigo-500 h-full" style="width: 0%"></div>
+                    <div class="flex-1 bg-slate-100 h-4 rounded-full overflow-hidden">
+                        <div id="prog-major" class="bg-indigo-500 h-full transition-all" style="width: 0%"></div>
                     </div>
                     <span id="txt-major" class="font-bold text-indigo-600">0/100</span>
                 </div>
             </div>
         </div>
 
-        <div id="course-container" class="space-y-6 pb-10">
-            </div>
+        <div id="course-container" class="space-y-6 pb-20"></div>
     </div>
 
     <script>
-        // โครงสร้างหลักสูตรตามที่คุณระบุ
+        // --- 1. CONFIG & DATA ---
+        let isLoginMode = true;
+        let currentUser = null;
+
         const curriculum = [
-            { 
-                category: "1.1 กลุ่มสาระอยู่ดีมีสุข", 
-                min: 6, 
-                key: "c11",
-                courses: [
-                    { id: "WELL101", name: "สุขภาพและการออกกำลังกาย", credit: 3 },
-                    { id: "WELL102", name: "จิตวิทยาเพื่อการใช้ชีวิต", credit: 3 }
-                ]
-            },
-            { 
-                category: "1.2 กลุ่มสาระศาสตร์แห่งผู้ประกอบการ", 
-                min: 3, 
-                key: "c12",
-                courses: [
-                    { id: "ENT101", name: "นวัตกรรมและการประกอบการ", credit: 3 }
-                ]
-            },
-            { 
-                category: "1.3 กลุ่มสาระภาษากับการสื่อสาร", 
-                min: 13, 
-                key: "c13",
-                courses: [
-                    { id: "ENG101", name: "English 1", credit: 3 },
-                    { id: "ENG102", name: "English 2", credit: 3 },
-                    { id: "THA101", name: "ภาษาไทยพื้นฐาน", credit: 3 },
-                    { id: "ENG201", name: "English for Work", credit: 4 }
-                ]
-            },
-            { 
-                category: "1.4 กลุ่มสาระพลเมืองไทยและพลเมืองโลก", 
-                min: 5, 
-                key: "c14",
-                courses: [
-                    { id: "CIV101", name: "สังคมโลก", credit: 3 },
-                    { id: "CIV102", name: "พลเมืองอาสา", credit: 2 }
-                ]
-            },
-            { 
-                category: "1.5 กลุ่มสาระสุนทรียศาสตร์", 
-                min: 3, 
-                key: "c15",
-                courses: [
-                    { id: "ART101", name: "ศิลปะกับการใช้ชีวิต", credit: 3 }
-                ]
-            },
-            { 
-                category: "2.1 วิชาเฉพาะบังคับ", 
-                min: 79, 
-                key: "c21",
-                courses: [
-                    { id: "MAJOR101", name: "วิชาเอกบังคับ 1", credit: 3 },
-                    { id: "MAJOR102", name: "วิชาเอกบังคับ 2", credit: 3 },
-                    { id: "MAJOR103", name: "โปรเจกต์จบ", credit: 6 }
-                    // เพิ่มวิชาเอกบังคับให้ครบที่นี่
-                ]
-            },
-            { 
-                category: "2.2 วิชาเลือกเฉพาะ", 
-                min: 21, 
-                key: "c22",
-                courses: [
-                    { id: "ELECT1", name: "วิชาเลือกเอก 1", credit: 3 },
-                    { id: "ELECT2", name: "วิชาเลือกเอก 2", credit: 3 }
-                    // เพิ่มวิชาเลือกเอกให้ครบที่นี่
-                ]
-            }
+            { category: "1.1 กลุ่มสาระอยู่ดีมีสุข", min: 6, key: "c11", courses: [{ id: "WELL101", name: "สุขภาพ", credit: 3 }, { id: "WELL102", name: "จิตวิทยา", credit: 3 }] },
+            { category: "1.2 กลุ่มสาระศาสตร์แห่งผู้ประกอบการ", min: 3, key: "c12", courses: [{ id: "ENT101", name: "นวัตกรรม", credit: 3 }] },
+            { category: "1.3 กลุ่มสาระภาษากับการสื่อสาร", min: 13, key: "c13", courses: [{ id: "ENG101", name: "English 1", credit: 3 }, { id: "THA101", name: "ภาษาไทย", credit: 3 }] },
+            { category: "2.1 วิชาเฉพาะบังคับ", min: 79, key: "c21", courses: [{ id: "CS101", name: "Computer Basic", credit: 3 }, { id: "CS102", name: "Programming", credit: 3 }] }
+            // สามารถเพิ่มรายวิชาอื่นๆ ต่อได้เหมือนเดิมครับ
         ];
 
-        let currentUserId = "";
+        // --- 2. AUTH LOGIC ---
+        function toggleAuth() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? "เข้าสู่ระบบ" : "สมัครสมาชิกใหม่";
+            document.getElementById('auth-btn').innerText = isLoginMode ? "เข้าสู่ระบบ" : "ยืนยันการสมัคร";
+            document.getElementById('auth-toggle').innerText = isLoginMode ? "ยังไม่มีบัญชี? สมัครสมาชิกที่นี่" : "มีบัญชีอยู่แล้ว? เข้าสู่ระบบ";
+        }
 
-        function login() {
-            const id = document.getElementById('student-id').value;
-            if (!id) return alert("กรุณากรอกรหัสนักศึกษา");
-            currentUserId = id;
-            document.getElementById('login-box').classList.add('hidden');
+        function handleAuth() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
+            if (!user || !pass) return alert("กรุณากรอกข้อมูลให้ครบ");
+
+            let users = JSON.parse(localStorage.getItem('app_users')) || {};
+
+            if (isLoginMode) {
+                // Login
+                if (users[user] && users[user].password === pass) {
+                    startApp(user);
+                } else {
+                    alert("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+                }
+            } else {
+                // Register
+                if (users[user]) return alert("ชื่อผู้ใช้นี้ถูกใช้ไปแล้ว");
+                users[user] = { password: pass, grades: {} };
+                localStorage.setItem('app_users', JSON.stringify(users));
+                alert("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
+                toggleAuth();
+            }
+        }
+
+        function startApp(username) {
+            currentUser = username;
+            document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('main-content').classList.remove('hidden');
-            document.getElementById('user-display').innerText = "รหัสนักศึกษา: " + currentUserId;
+            document.getElementById('display-user').innerText = username;
             renderAll();
         }
 
+        function logout() {
+            location.reload();
+        }
+
+        // --- 3. CORE SYSTEM LOGIC ---
         function renderAll() {
-            const savedGrades = JSON.parse(localStorage.getItem('grades_' + currentUserId)) || {};
+            const users = JSON.parse(localStorage.getItem('app_users'));
+            const savedGrades = users[currentUser].grades || {};
             const container = document.getElementById('course-container');
             container.innerHTML = "";
 
-            let totalGen = 0;
-            let totalMajor = 0;
+            let totalGen = 0, totalMajor = 0;
 
             curriculum.forEach(group => {
                 let groupPassedCredit = 0;
-                
-                let html = `
-                    <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200">
-                        <div class="bg-slate-50 p-4 border-b flex justify-between items-center">
-                            <h4 class="font-bold text-slate-800">${group.category} <span class="text-xs font-normal text-slate-500">(ขั้นต่ำ ${group.min} นก.)</span></h4>
-                            <span id="sum-${group.key}" class="text-sm font-bold">0/${group.min} นก.</span>
-                        </div>
-                        <table class="w-full text-left">
-                            <tbody class="divide-y divide-slate-100">
-                `;
+                let html = `<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-50 p-4 border-b flex justify-between font-bold">
+                        <span>${group.category}</span>
+                        <span id="sum-${group.key}">0/${group.min}</span>
+                    </div>
+                    <table class="w-full">
+                        <tbody class="divide-y">`;
 
                 group.courses.forEach(course => {
                     const grade = savedGrades[course.id] || "";
                     const isPassed = (grade !== "" && grade !== "F" && grade !== "W");
                     if (isPassed) {
                         groupPassedCredit += course.credit;
-                        // แยกนับหน่วยกิตตามหมวดใหญ่
                         if (group.key.startsWith('c1')) totalGen += course.credit;
                         if (group.key.startsWith('c2')) totalMajor += course.credit;
                     }
 
-                    html += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-4 text-sm font-mono text-slate-500">${course.id}</td>
-                            <td class="p-4 text-sm">${course.name} (${course.credit} นก.)</td>
-                            <td class="p-4 w-32">
-                                <select onchange="saveGrade('${course.id}', this.value)" class="w-full p-1 border rounded text-sm ${isPassed ? 'bg-green-50 border-green-200' : 'bg-white'}">
-                                    <option value="">-</option>
-                                    ${['A','B+','B','C+','C','D+','D','F','W'].map(g => `<option value="${g}" ${grade === g ? 'selected' : ''}>${g}</option>`).join('')}
-                                </select>
-                            </td>
-                        </tr>
-                    `;
+                    html += `<tr>
+                        <td class="p-4 text-sm">${course.id} - ${course.name}</td>
+                        <td class="p-4 w-32">
+                            <select onchange="saveGrade('${course.id}', this.value)" class="w-full p-1 border rounded ${isPassed ? 'bg-green-50' : ''}">
+                                <option value="">-</option>
+                                ${['A','B+','B','C+','C','D+','D','F','W'].map(g => `<option value="${g}" ${grade === g ? 'selected' : ''}>${g}</option>`).join('')}
+                            </select>
+                        </td>
+                    </tr>`;
                 });
 
                 html += `</tbody></table></div>`;
                 container.innerHTML += html;
-                
-                // อัปเดตยอดรวมรายกลุ่ม
-                const sumLabel = document.getElementById(`sum-${group.key}`);
-                sumLabel.innerText = `${groupPassedCredit}/${group.min} นก.`;
-                sumLabel.className = `text-sm font-bold ${groupPassedCredit >= group.min ? 'text-green-600' : 'text-slate-500'}`;
+                document.getElementById(`sum-${group.key}`).innerText = `${groupPassedCredit}/${group.min} นก.`;
             });
 
-            // อัปเดต Progress Bar หมวดใหญ่
-            updateProgress('prog-gen', 'txt-gen', totalGen, 30);
-            updateProgress('prog-major', 'txt-major', totalMajor, 100);
-        }
-
-        function updateProgress(barId, textId, current, target) {
-            const percent = Math.min((current / target) * 100, 100);
-            document.getElementById(barId).style.width = percent + "%";
-            document.getElementById(textId).innerText = `${current}/${target}`;
-            if (current >= target) document.getElementById(textId).classList.replace('text-blue-600', 'text-green-600');
+            updateBar('prog-gen', 'txt-gen', totalGen, 30);
+            updateBar('prog-major', 'txt-major', totalMajor, 100);
         }
 
         function saveGrade(courseId, grade) {
-            const savedGrades = JSON.parse(localStorage.getItem('grades_' + currentUserId)) || {};
-            savedGrades[courseId] = grade;
-            localStorage.setItem('grades_' + currentUserId, JSON.stringify(savedGrades));
+            let users = JSON.parse(localStorage.getItem('app_users'));
+            users[currentUser].grades[courseId] = grade;
+            localStorage.setItem('app_users', JSON.stringify(users));
             renderAll();
+        }
+
+        function updateBar(barId, textId, curr, target) {
+            const percent = Math.min((curr / target) * 100, 100);
+            document.getElementById(barId).style.width = percent + "%";
+            document.getElementById(textId).innerText = `${curr}/${target}`;
         }
     </script>
 </body>
