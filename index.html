@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบตรวจสอบหลักสูตร</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow">
+        <h1 class="text-2xl font-bold mb-4">สถานะการเรียนของฉัน</h1>
+        <div class="mb-6">
+            <p>ความคืบหน้า: <span id="percent">0</span>%</p>
+            <div class="w-full bg-gray-200 h-4 rounded">
+                <div id="bar" class="bg-blue-500 h-4 rounded" style="width: 0%"></div>
+            </div>
+        </div>
+        <ul id="course-list" class="space-y-2">
+            </ul>
+    </div>
+
+    <script>
+        // ข้อมูลสมมติ
+        const courses = [
+            { id: "CS101", name: "Programming 1", pass: true },
+            { id: "CS102", name: "Data Structure", pass: false },
+            { id: "GE101", name: "English 1", pass: true }
+        ];
+
+        const list = document.getElementById('course-list');
+        let passedCount = 0;
+
+        courses.forEach(c => {
+            if(c.pass) passedCount++;
+            list.innerHTML += `
+                <li class="p-3 border rounded flex justify-between">
+                    <span>${c.id} - ${c.name}</span>
+                    <span class="${c.pass ? 'text-green-600' : 'text-red-500'}">
+                        ${c.pass ? '✔ ผ่านแล้ว' : '✘ ยังไม่เรียน'}
+                    </span>
+                </li>`;
+        });
+
+        document.getElementById('percent').innerText = Math.round((passedCount/courses.length)*100);
+        document.getElementById('bar').style.width = (passedCount/courses.length)*100 + '%';
+    </script>
+</body>
+</html>
